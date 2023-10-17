@@ -1,107 +1,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Define the structure of a BST node
-struct TreeNode
-{
-    int data;
-    struct TreeNode *left;
-    struct TreeNode *right;
+struct Node {
+    int value;
+    struct Node *left;
+    struct Node *right;
 };
 
-// Function to create a new BST node
-struct TreeNode *createNode(int item)
-{
-    struct TreeNode *newNode = (struct TreeNode *)malloc(sizeof(struct TreeNode));
-    newNode->data = item;
-    newNode->left = newNode->right = NULL;
-    return newNode;
+struct Node *createNode(int item) {
+    struct Node *temp = (struct Node *)malloc(sizeof(struct Node));
+    temp->value = item;
+    temp->left = temp->right = NULL;
+    return temp;
 }
 
-// Function to insert a new node into the BST
-struct TreeNode *insert(struct TreeNode *root, int item)
-{
-    // If the tree is empty, return a new node
-    if (root == NULL)
-    {
-        return createNode(item);
-    }
-
-    // Otherwise, recur down the tree
-    if (item < root->data)
-    {
-        root->left = insert(root->left, item);
-    }
-    else if (item > root->data)
-    {
-        root->right = insert(root->right, item);
-    }
-
-    // Return the (unchanged) node pointer
-    return root;
+struct Node *insertIntoBST(struct Node *rootNode, int item) {
+    if (rootNode == NULL) return createNode(item);
+    if (item < rootNode->value) rootNode->left = insertIntoBST(rootNode->left, item);
+    else if (item >= rootNode->value) rootNode->right = insertIntoBST(rootNode->right, item);
+    return rootNode;
 }
 
-// Function to search for an item in the BST
-struct TreeNode *search(struct TreeNode *root, int item)
-{
-    // Base cases: root is null or the item is found at the root
-    if (root == NULL || root->data == item)
-    {
-        return root;
-    }
-
-    // If the item is greater than the root's data, recur on the right subtree
-    if (root->data < item)
-    {
-        return search(root->right, item);
-    }
-
-    // If the item is smaller than the root's data, recur on the left subtree
-    return search(root->left, item);
+struct Node *search(struct Node *node, int item) {
+    if (node == NULL || node->value == item) return node;
+    if (item < node->value) return search(node->left, item);
+    return search(node->right, item);
 }
 
-// Function to locate or add an item in the BST
-struct TreeNode *locateOrAdd(struct TreeNode *root, int item)
-{
-    // Search for the item in the BST
-    struct TreeNode *result = search(root, item);
+int main() {
+    int n;
+    scanf("%d", &n);
+    int items[n];
+    for (int i = 0; i < n; i++) scanf("%d", &items[i]);
 
-    // If the item is not found, insert it into the BST
-    if (result == NULL)
-    {
-        root = insert(root, item);
+    struct Node *rootNode = NULL;
+    for (int i = 0; i < n; i++) {
+        rootNode = insertIntoBST(rootNode, items[i]);
     }
 
-    // Return the updated root
-    return root;
-}
+    int target;
+    scanf("%d", &target);
+    struct Node *result = search(rootNode, target);
+    if (result != NULL) printf("This item is in BST\n");
+    else printf("This item isn't in BST\n");
 
-// Function to perform an inorder traversal of the BST
-void inorderTraversal(struct TreeNode *root)
-{
-    if (root != NULL)
-    {
-        inorderTraversal(root->left);
-        printf("%d ", root->data);
-        inorderTraversal(root->right);
-    }
-}
-
-int main()
-{
-    struct TreeNode *root = NULL;
-
-    // Insert elements into the BST
-    root = locateOrAdd(root, 50);
-    root = locateOrAdd(root, 30);
-    root = locateOrAdd(root, 70);
-    root = locateOrAdd(root, 20);
-    root = locateOrAdd(root, 40);
-    root = locateOrAdd(root, 60);
-    root = locateOrAdd(root, 80);
-
-    printf("Inorder traversal of the BST:\n");
-    inorderTraversal(root);
+    rootNode = insertIntoBST(rootNode, target);
 
     return 0;
 }
